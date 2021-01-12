@@ -51,6 +51,8 @@ call plug#begin(stdpath('data') . '/plugged')
     \ }
   Plug 'sindresorhus/github-markdown-css'  " will be used for md preview
   Plug 'reedes/vim-pencil'
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+  Plug 'junegunn/fzf.vim'
   Plug 'junegunn/goyo.vim'
   Plug 'junegunn/limelight.vim'
   Plug 'jiangmiao/auto-pairs'

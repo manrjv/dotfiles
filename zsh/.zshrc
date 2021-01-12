@@ -2,7 +2,7 @@
 setopt histignorealldups histsavenodups sharehistory
 setopt correct_all
 HISTSIZE=1000
-SAVEHIST=2000
+SAVEHIST=1000
 HISTFILE=~/.cache/zsh/history
 bindkey -v
 export KEYTIMEOUT=1
@@ -44,3 +44,14 @@ alias vi_off='spaceship_vi_mode_disable'
 alias py38nvim='source $HOME/.venv/py38nvim/bin/activate'
 alias wsensors='watch sensors -f'
 alias fd='/usr/bin/fdfind'
+alias bat='/usr/bin/batcat'
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_COMMAND="fdfind --type f --hidden --follow"
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border \
+  --preview '([[ -f {} ]] && (batcat --style=numbers --color=always {} || cat {})) \
+  || ([[ -d {} ]] && (tree -alCI '.git' {} | less)) || echo {} 2> /dev/null | head -50'"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="--preview 'batcat --color=always --line-range :50 {}'"
+export FZF_ALT_C_COMMAND="fdfind --type d --hidden --follow"
+export FZF_ALT_C_OPTS="--preview 'tree -alCI '.git' {} | head -50'"
