@@ -121,15 +121,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# my settings:
-set -o vi
-export EDITOR="/usr/bin/nvim"
-export VISUAL="/usr/bin/nvim"
-alias py38nvim='source $HOME/.venv/py38nvim/bin/activate'
-alias wsensors='watch sensors -f'
-alias fd='/usr/bin/fdfind'
-alias bat='/usr/bin/batcat'
-
+# fzf settings:
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_COMMAND="fdfind --type f --hidden --follow"
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border \
@@ -139,3 +131,12 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_CTRL_T_OPTS="--preview 'batcat --color=always --line-range :50 {}'"
 export FZF_ALT_C_COMMAND="fdfind --type d --hidden --follow"
 export FZF_ALT_C_OPTS="--preview 'tree -alCI '.git' {} | head -50'"
+
+# my settings:
+set -o vi
+export EDITOR="/usr/bin/nvim"
+export VISUAL="/usr/bin/nvim"
+alias py38nvim='source $HOME/.venv/py38nvim/bin/activate'
+alias wsensors='watch sensors -f'
+alias fd='/usr/bin/fdfind'
+alias bat='/usr/bin/batcat'

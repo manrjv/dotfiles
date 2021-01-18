@@ -64,6 +64,8 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'tpope/vim-surround'
   Plug 'morhetz/gruvbox'
   Plug 'RRethy/vim-hexokinase', { 'do': 'make hexokinase' }
+  Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
 call plug#end()
 
 " plugin settings - deoplete.nvim:
@@ -90,7 +92,7 @@ let g:gitgutter_sign_priority = 10
 function! GitStatus()
   let [a,m,r] = GitGutterGetHunkSummary()
   if a > 0 || m > 0 || r > 0
-    return printf('[+%d ~%d -%d]', a, m, r)
+    return printf('+%d ~%d -%d  ', a, m, r)
   else
     return ''
   endif
@@ -123,13 +125,13 @@ let g:pencil#cursorwrap = 0
 let g:pencil#textwidth = 74
 
 " plugin settings - limelight.vim:
-let g:limelight_conceal_ctermfg = 'gray'
 let g:limelight_conceal_guifg = '#777777'
+let g:limelight_conceal_ctermfg = 'gray'
 let g:limelight_default_coefficient = 0.7
 augroup au_limelight
   autocmd!
-  autocmd User GoyoEnter Limelight
-  autocmd User GoyoLeave Limelight!
+  autocmd User GoyoEnter Limelight | set scrolloff=99
+  autocmd User GoyoLeave Limelight! | set scrolloff=5 | call SetHighlights()
 augroup end
 
 " plugin settings - vim-hexokinase:
@@ -144,6 +146,37 @@ let g:Hexokinase_optInPatterns = [
   \ 'colour_names'
   \ ]
 
+" plugin settings - vim-airline and vim-airline-themes:
+let g:airline_mode_map = {
+  \ '__'     : '-',
+  \ 'c'      : 'C',
+  \ 'i'      : 'I',
+  \ 'ic'     : 'I',
+  \ 'ix'     : 'I',
+  \ 'n'      : 'N',
+  \ 'multi'  : 'M',
+  \ 'ni'     : 'N',
+  \ 'no'     : 'N',
+  \ 'R'      : 'R',
+  \ 'Rv'     : 'R',
+  \ 's'      : 'S',
+  \ 'S'      : 'S',
+  \ 't'      : 'T',
+  \ 'v'      : 'V',
+  \ 'V'      : 'V',
+  \ ''       : 'V',
+  \ }
+let g:airline_section_b = "%{GitStatus()}%{FugitiveHead()}"
+let g:airline_section_y = "b:%n"
+let g:airline_section_z = "%l/%L :%c"
+let g:airline#extensions#branch#enabled = 0
+let g:airline#extensions#fzf#enabled = 1
+let g:airline#extensions#gutentags#enabled = 1
+let g:airline#extensions#hunks#enabled = 0
+let g:airline_highlighting_cache = 1
+let g:airline_powerline_fonts = 1
+let g:airline_theme='molokai'
+
 " netrw settings:
 let g:netrw_altv = 1
 let g:netrw_banner = 0
@@ -154,19 +187,6 @@ augroup au_netrw
   autocmd!
   autocmd FileType netrw setlocal bufhidden=wipe
 augroup end
-
-" statusline settings:
-set statusline=
-set statusline+=\ %y
-set statusline+=\ %{PencilMode()}
-set statusline+=\ %t
-set statusline+=\ %r%m
-set statusline+=\ %{FugitiveStatusline()}
-set statusline+=\ %{GitStatus()}
-set statusline+=%=
-set statusline+=\ %c:%l/%L
-set statusline+=\ %{SleuthIndicator()}
-set statusline+=\ [buf:%n]
 
 " autocmd - delete trailing whitespace:
 augroup au_del_space
@@ -181,29 +201,6 @@ augroup au_md_txt
     \ | call pencil#init({'wrap': 'soft'})
 augroup END
 
-" function - colors and highlights:
-function SetHighlights()
-  highlight Comment gui=italic cterm=italic
-  highlight PmenuSel guifg=#ffffff ctermfg=white
-  highlight StatusLine guifg=#2b3856 ctermfg=darkblue
-    \ guibg=#bcc6cc ctermbg=black
-  highlight StatusLineNC guifg=#616d7e ctermfg=darkgray
-    \ guibg=#000000 ctermbg=gray
-  highlight VertSplit guifg=#bcc6cc ctermfg=gray
-    \ guibg=NONE ctermbg=NONE
-endfunction
-
-" function - toggle background between dark and light:
-function ToggleBackground()
-  if &background == "dark"
-    set background=light
-  else
-    set background=dark
-    highlight Normal guibg=NONE ctermbg=NONE
-  endif
-  call SetHighlights()
-endfunction
-
 " function - toggle conceallevel
 function ToggleConceal()
   if &conceallevel == 0
@@ -213,10 +210,41 @@ function ToggleConceal()
   endif
 endfunction
 
+" function - toggle background between dark and light:
+function ToggleBackground()
+  if &background == "dark"
+    set background=light
+  else
+    set background=dark
+  endif
+  call SetHighlights()
+endfunction
+
+" function - toggle transparency:
+function ToggleTransparency()
+  if &background == "dark"
+    if g:is_transparent == 1
+      set background=dark
+      highlight Comment gui=italic cterm=italic
+      let g:is_transparent = 0
+    else
+      call SetHighlights()
+    endif
+  endif
+endfunction
+
+" function - colors and highlights:
+function SetHighlights()
+  highlight Comment gui=italic cterm=italic
+  if &background == "dark"
+    highlight Normal guibg=NONE ctermbg=NONE
+    let g:is_transparent = 1
+  endif
+endfunction
+
 " colors and highlights settings - after plugins are loaded:
 colorscheme gruvbox
 set background=dark
-highlight Normal guibg=NONE ctermbg=NONE
 call SetHighlights()
 
 " general key mappings:
@@ -226,17 +254,18 @@ nnoremap                <F2>  :source $MYVIMRC<CR>
 inoremap   <expr>      <Tab>  pumvisible() ? "\<C-N>" : "\<Tab>"
 inoremap   <expr>    <S-Tab>  pumvisible() ? "\<C-P>" : "\<S-Tab>"
 nnoremap                   Q  !!sh<CR>
-nnoremap                 sc1  :set signcolumn=yes<CR>
-nnoremap                 sc2  :set signcolumn=yes:2<CR>
-nnoremap                 sc3  :set signcolumn=yes:3<CR>
-nnoremap                 scx  :set signcolumn=yes:
 nnoremap                 yob  :call ToggleBackground()<CR>
 nnoremap                 yoc  :call ToggleConceal()<CR>
 nnoremap                 yoh  :set hlsearch!<CR>
 nnoremap                 yol  :set listl!<CR>
 nnoremap                 yos  :set spell!<CR>
-inoremap          <leader>fn  <C-R>=expand("%:t")<CR>
+nnoremap                 yot  :call ToggleTransparency()<CR>
 nnoremap          <leader>bp  ggO#!/usr/bin/env python3<CR>#<Space><C-R>=expand("%:t")<CR><Space>-<Space>
+inoremap          <leader>fn  <C-R>=expand("%:t")<CR>
+nnoremap          <leader>s1  :set signcolumn=yes<CR>
+nnoremap          <leader>s2  :set signcolumn=yes:2<CR>
+nnoremap          <leader>s3  :set signcolumn=yes:3<CR>
+nnoremap          <leader>sx  :set signcolumn=yes:
 
 " plugin key mappings - LanguageClient-neovim:
 nmap              <leader>l]  <Plug>(lcn-diagnostics-next)
@@ -248,22 +277,27 @@ nmap              <leader>lm  <Plug>(lcn-menu)
 nmap              <leader>lr  <Plug>(lcn-rename)
 
 " plugin key mappings - vim-gitgutter:
-nmap              <leader>g]  <Plug>(GitGutterNextHunk)
-nmap              <leader>g[  <Plug>(GitGutterPrevHunk)
-nmap              <leader>gp  <Plug>(GitGutterPreviewHunk)
 nnoremap                 ygg  :GitGutterToggle<CR>
 nnoremap                 ygs  :GitGutterSignsToggle<CR>
 nnoremap                 ygh  :GitGutterLineHighlightsToggle<CR>
 nnoremap                 ygn  :GitGutterLineNrHighlightsToggle<CR>
 nnoremap                 ygf  :GitGutterFold<CR>
+nmap              <leader>g]  <Plug>(GitGutterNextHunk)
+nmap              <leader>g[  <Plug>(GitGutterPrevHunk)
+nmap              <leader>gp  <Plug>(GitGutterPreviewHunk)
+nmap              <leader>gu  <Plug>(GitGutterUndoHunk)
 
 " plugin key mappings - markdown-preview.nvim:
 nnoremap          <leader>mp  :MarkdownPreview<CR>
 
 " plugin key mappings - vim-pencil:
 nnoremap                 ypp  :TogglePencil<CR>
-nnoremap                 yph  :PencilHard<CR>
-nnoremap                 yps  :PencilSoft<CR>
+nnoremap          <leader>ph  :PencilHard<CR>
+nnoremap          <leader>ps  :PencilSoft<CR>
+
+" plugin key mappings - fzf:
+nnoremap          <leader>ff  :FZF<CR>
+nmap              <leader>fl  :call fzf#run(fzf#wrap({'source': 'ls'}))<CR>
 
 " plugin key mappings - goyo.vim and limelight.vim:
 nnoremap <silent>       goyo  :Goyo<CR>
