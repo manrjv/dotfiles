@@ -62,6 +62,7 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'ludovicchabant/vim-gutentags'
   Plug 'tpope/vim-sleuth'  " auto-adjusts et, sw, sta, and sts; ts=8
   Plug 'tpope/vim-surround'
+  Plug 'voldikss/vim-floaterm'
   Plug 'morhetz/gruvbox'
   Plug 'RRethy/vim-hexokinase', { 'do': 'make hexokinase' }
   Plug 'vim-airline/vim-airline'
@@ -74,10 +75,38 @@ call deoplete#custom#source('_', 'max_menu_width', 60)
 
 " plugin settings - LanguageClient-neovim:
 set hidden
-let g:LanguageClient_hideVirtualTextsOnInsert = 1
-let g:LanguageClient_enableExtensions = {
-  \ 'python': v:true,
+let g:LanguageClient_diagnosticsDisplay = {
+  \ 1: {
+  \     "name": "Error",
+  \     "texthl": "LanguageClientError",
+  \     "signText": "✖",
+  \     "signTexthl": "LanguageClientErrorSign",
+  \     "virtualTexthl": "Error",
+  \    },
+  \ 2: {
+  \     "name": "Warning",
+  \     "texthl": "LanguageClientWarning",
+  \     "signText": "⚠",
+  \     "signTexthl": "LanguageClientWarningSign",
+  \     "virtualTexthl": "Error",
+  \    },
+  \ 3: {
+  \     "name": "Information",
+  \     "texthl": "LanguageClientInfo",
+  \     "signText": "ℹ",
+  \     "signTexthl": "LanguageClientInfoSign",
+  \     "virtualTexthl": "Todo",
+  \    },
+  \ 4: {
+  \     "name": "Hint",
+  \     "texthl": "LanguageClientInfo",
+  \     "signText": "➤",
+  \     "signTexthl": "LanguageClientInfoSign",
+  \     "virtualTexthl": "Todo",
+  \    },
   \ }
+let g:LanguageClient_hideVirtualTextsOnInsert = 1
+let g:LanguageClient_selectionUI = 'fzf'
 let g:LanguageClient_serverCommands = {
   \ 'python': ['$HOME/.venv/py38nvim/bin/pyls'],
   \ }
@@ -167,7 +196,6 @@ let g:airline_mode_map = {
   \ ''       : 'V',
   \ }
 let g:airline_section_b = "%{GitStatus()}%{FugitiveHead()}"
-let g:airline_section_y = "b:%n"
 let g:airline_section_z = "%l/%L :%c"
 let g:airline#extensions#branch#enabled = 0
 let g:airline#extensions#fzf#enabled = 1
@@ -175,6 +203,8 @@ let g:airline#extensions#gutentags#enabled = 1
 let g:airline#extensions#hunks#enabled = 0
 let g:airline_highlighting_cache = 1
 let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline_theme='molokai'
 
 " netrw settings:
@@ -253,6 +283,7 @@ set timeoutlen=750
 nnoremap                <F2>  :source $MYVIMRC<CR>
 inoremap   <expr>      <Tab>  pumvisible() ? "\<C-N>" : "\<Tab>"
 inoremap   <expr>    <S-Tab>  pumvisible() ? "\<C-P>" : "\<S-Tab>"
+nnoremap               <tab>  :bnext<CR>
 nnoremap                   Q  !!sh<CR>
 nnoremap                 yob  :call ToggleBackground()<CR>
 nnoremap                 yoc  :call ToggleConceal()<CR>
@@ -260,7 +291,7 @@ nnoremap                 yoh  :set hlsearch!<CR>
 nnoremap                 yol  :set listl!<CR>
 nnoremap                 yos  :set spell!<CR>
 nnoremap                 yot  :call ToggleTransparency()<CR>
-nnoremap          <leader>bp  ggO#!/usr/bin/env python3<CR>#<Space><C-R>=expand("%:t")<CR><Space>-<Space>
+nnoremap          <leader>bp  ggO#!/usr/bin/env python<CR>#<Space><C-R>=expand("%:t")<CR><Space>-<Space>
 inoremap          <leader>fn  <C-R>=expand("%:t")<CR>
 nnoremap          <leader>s1  :set signcolumn=yes<CR>
 nnoremap          <leader>s2  :set signcolumn=yes:2<CR>
