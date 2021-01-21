@@ -196,6 +196,7 @@ let g:airline_mode_map = {
   \ ''       : 'V',
   \ }
 let g:airline_section_b = "%{GitStatus()}%{FugitiveHead()}"
+let g:airline_section_y = "%{SleuthIndicator()}"
 let g:airline_section_z = "%l/%L :%c"
 let g:airline#extensions#branch#enabled = 0
 let g:airline#extensions#fzf#enabled = 1
