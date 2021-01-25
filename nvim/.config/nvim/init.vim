@@ -284,7 +284,8 @@ set timeoutlen=750
 nnoremap                <F2>  :source $MYVIMRC<CR>
 inoremap   <expr>      <Tab>  pumvisible() ? "\<C-N>" : "\<Tab>"
 inoremap   <expr>    <S-Tab>  pumvisible() ? "\<C-P>" : "\<S-Tab>"
-nnoremap               <tab>  :bnext<CR>
+nnoremap               <Tab>  :bnext<CR>
+nnoremap             <S-Tab>  :bprevious<CR>
 nnoremap                   Q  !!sh<CR>
 nnoremap                 yob  :call ToggleBackground()<CR>
 nnoremap                 yoc  :call ToggleConceal()<CR>
