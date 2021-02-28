@@ -64,6 +64,7 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'tpope/vim-surround'
   Plug 'voldikss/vim-floaterm'
   Plug 'morhetz/gruvbox'
+  Plug 'NLKNguyen/papercolor-theme'
   Plug 'RRethy/vim-hexokinase', { 'do': 'make hexokinase' }
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
@@ -163,6 +164,15 @@ augroup au_limelight
   autocmd User GoyoLeave Limelight! | set scrolloff=5 | call SetHighlights()
 augroup end
 
+" plugin settings - papercolor-theme
+let g:PaperColor_Theme_Options = {
+  \ 'language': {
+  \    'python': {
+  \      'highlight_builtins' : 1
+  \     }
+  \   }
+  \ }
+
 " plugin settings - vim-hexokinase:
 let g:Hexokinase_highlighters = [ 'backgroundfull', 'sign_column' ]
 let g:Hexokinase_optInPatterns = [
@@ -207,6 +217,7 @@ let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline_theme='molokai'
+" let g:airline_theme='papercolor'
 
 " netrw settings:
 let g:netrw_altv = 1
@@ -274,8 +285,9 @@ function SetHighlights()
 endfunction
 
 " colors and highlights settings - after plugins are loaded:
-colorscheme gruvbox
-set background=dark
+" colorscheme gruvbox
+colorscheme PaperColor
+set background=light
 call SetHighlights()
 
 " general key mappings:
