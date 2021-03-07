@@ -285,9 +285,9 @@ function SetHighlights()
 endfunction
 
 " colors and highlights settings - after plugins are loaded:
-" colorscheme gruvbox
-colorscheme PaperColor
-set background=light
+colorscheme gruvbox
+" colorscheme PaperColor
+set background=dark
 call SetHighlights()
 
 " general key mappings:
